@@ -1,17 +1,11 @@
 # Import the required libraries
 from tkinter import *
-from tkinter import ttk
-from PIL import ImageTk, Image
-import os
-import time
-
-import platform    # For getting the operating system name
-import subprocess  # For executing a shell command
 import ping3
 
 sum_of_response_times = 0
 num_of_icmp_pkts = 0
-num_of_responses_recived = 1
+num_of_responses_recived = 0
+squared_sum = 0
 
 # Create an instance of tkinter frame or window
 win=Tk()
@@ -20,6 +14,7 @@ def ping():
     global sum_of_response_times
     global num_of_icmp_pkts
     global num_of_responses_recived
+    global squared_sum
 
     t = ping3.ping("google.com")
     tl = 0
@@ -34,13 +29,14 @@ def ping():
         num_of_responses_recived+=1
     
     avg_response_time = sum_of_response_times / num_of_responses_recived
-    
-    print("Response time: ",t,"Avg Response time: ", avg_response_time)
+    squared_sum += (tl - avg_response_time)**2
+    std = (squared_sum / num_of_responses_recived) ** 0.5
+    print("Response time: ",t,"Avg Response time: ", avg_response_time, "std deviation: ",std)
 
     if(t == None or avg_response_time > 0.8 ):
         label.config(text="Net is Slow", fg="white", bg="red")
     elif(t == False):
-        label.config(text="Connection is closed", fg="white", bg="blue")
+        label.config(text="Connection closed", fg="white", bg="blue")
     else:
         label.config(text="Net OK", fg="white", bg="green")
     
